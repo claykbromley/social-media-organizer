@@ -1,0 +1,31 @@
+.App {
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.folder-list, .post-form, .folder-page {
+  margin-bottom: 20px;
+}
+
+.folder-list ul {
+  list-style-type: none;
+  padding: 0;
+}
+
+.folder-list li {
+  margin: 5px 0;
+}
+
+.post-card {
+  border: 1px solid #ddd;
+  padding: 10px;
+  margin: 10px 0;
+}
+
+.tag {
+  display: inline-block;
+  background-color: #f0f0f0;
+  margin-right: 5px;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
