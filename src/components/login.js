@@ -8,21 +8,23 @@ export default function Login({ setUser }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      if (isRegister) {
-        await registerUser(username, password);
-        alert("Registration successful! You can now log in.");
-        setIsRegister(false);
-      } else {
-        const response = await loginUser(username, password);
-        const { access_token } = response.data;
-        localStorage.setItem("token", access_token);
-        setUser(username);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("Error: " + (err.response?.data?.error || "Something went wrong"));
-    }
+    if (!username || !password) {
+      alert("Please insert username and password")
+    } else {
+      try {
+        if (isRegister) {
+          registerUser(username, password, setIsRegister)
+        } else {
+          const response = await loginUser(username, password);
+          const { access_token } = response.data;
+          localStorage.setItem("token", access_token);
+          setUser(username);
+        }
+      } catch (err) {
+        console.error(err);
+        alert("Error: " + (err.response?.data?.error || "Something went wrong"));
+      };
+    };
   };
 
   return (

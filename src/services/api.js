@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://127.0.0.1:5000"; // Flask server URL
+const API_BASE_URL = "https://gh-pages.d2dkjegv8aaxq5.amplifyapp.com";
 
 // Axios instance for API calls
 const api = axios.create({
@@ -17,18 +17,45 @@ api.interceptors.request.use((config) => {
 });
 
 // Auth endpoints
-export const registerUser = (username, password) =>
-  {api.post("/register", { username, password })};
+export const registerUser = async (username, password, setIsRegister) => {
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/register`,
+      { username, password },
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      }
+    );
+    console.log("Registration successful:", response.data);
+    alert("Registration successful! You can now log in.");
+    setIsRegister(false);
+  } catch (error) {
+    console.error("Error:", error.response?.data || error.message);
+    alert("Username already exists!");
+  };
+};
 
 export const loginUser = (username, password) =>
   api.post("/login", { username, password });
 
-// post folder endpoints
-export const fetchFolder = () => api.get("/folder");
+// Folder endpoints
+export const fetchFolder = async (setFolders) => {
+  const response = await axios.get(
+    String(API_BASE_URL)+"/folders",
+    {
+      headers: { "Content-Type": "application/json"},
+      withCredentials: true,
+    }
+  );
+  console.log("Folders fetched:", response.data);
+  const newFolders = response.data.map((folder) => ({[folder.folderName]: folder.posts}));
+  newFolders.length>0 ? setFolders(newFolders[0]) : setFolders(newFolders);
+};
 
 export const createFolder = async (folderName) => {
   const response = await axios.post(
-    "http://127.0.0.1:5000/folders",
+    String(API_BASE_URL)+"/folders",
     { folderName },
     {
       headers: { "Content-Type": "application/json"},
@@ -38,12 +65,9 @@ export const createFolder = async (folderName) => {
   console.log("Folder created:", response.data);
 }
 
-export const updateFolder = (postId, updatedData) =>
-  api.put(`/folder/${postId}`, updatedData);
-
 export const deleteFolder = async (folderName) => {
   const response = await axios.delete(
-    "http://127.0.0.1:5000/folders/"+String(folderName),
+    String(API_BASE_URL)+"/folders/"+String(folderName),
     { folderName },
     {
       headers: { "Content-Type": "application/json"},
@@ -51,4 +75,16 @@ export const deleteFolder = async (folderName) => {
     }
   );
   console.log("Folder deleted:", response.data);
+};
+
+export const updateFolder = async (selectedFolder, posts) => {
+  const response = await axios.put(
+    String(API_BASE_URL)+"/folders/"+String(selectedFolder),
+    { posts },
+    {
+      headers: { "Content-Type": "application/json"},
+      withCredentials: true,
+    }
+  );
+  console.log("Folder updated:", response.data);
 };

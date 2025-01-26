@@ -17,6 +17,16 @@ function App() {
   const [tagFilter, setTagFilter] = useState(null);
   const [showTags, setShowTags] = useState(false);
 
+  useEffect(() => {
+    if (user) {
+      try {
+        fetchFolder(setFolders)
+      } catch (error) {
+        console.error("Error fetching folders:", error);
+      };
+    };
+  }, [user]);
+
   const newFolder = async () => {
     const folderName = prompt('Enter folder name:');
     if (folderName && !folders[folderName]) {
@@ -68,10 +78,15 @@ function App() {
       updatedFolderContents.push(newPost);
     }
 
-    setFolders({
-      ...folders,
-      [selectedFolder]: updatedFolderContents
-    });
+    try {
+      updateFolder(selectedFolder, updatedFolderContents)
+      setFolders({
+        ...folders,
+        [selectedFolder]: updatedFolderContents
+      });
+    } catch (error) {
+      console.error("Error saving post:", error);
+    }
     
     closeModal();
   };
@@ -90,10 +105,15 @@ function App() {
 
   const deletePost = (folderName, index) => {
     const updatedFolderContents = folders[folderName].filter((_, i) => i !== index);
-    setFolders({
-      ...folders,
-      [folderName]: updatedFolderContents
-    });
+    try {
+      updateFolder(folderName, updatedFolderContents)
+      setFolders({
+        ...folders,
+        [folderName]: updatedFolderContents
+      });
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
   };
 
   const folderClick = (folder) => {

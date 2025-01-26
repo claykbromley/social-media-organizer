@@ -2,9 +2,11 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import (
-    JWTManager, create_access_token, jwt_required, get_jwt_identity
+    JWTManager, create_access_token
 )
 from flask_cors import CORS
+
+webURL = "https://claykbromley.github.io/social-media-organizer"
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'  # Use SQLite for simplicity
@@ -12,7 +14,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
 CORS(
     app,
-    origins=["http://localhost:3000"],
+    origins=[webURL],
     supports_credentials=True,
     methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["Content-Type", "Authorization"],
@@ -66,12 +68,12 @@ def login():
 
 folders = []
 
-@app.route("/folders", methods=["GET", "POST", "OPTIONS"])
+@app.route("/folders", methods=["GET", "POST", "OPTIONS", "DELETE", "PUT"])
 def handle_folders():
     global folders
     if request.method == "OPTIONS":  # Handle preflight requests
         response = app.response_class(status=204)
-        response.headers["Access-Control-Allow-Origin"] = "http://localhost:3000"
+        response.headers["Access-Control-Allow-Origin"] = webURL
         response.headers["Access-Control-Allow-Credentials"] = "true"
         response.headers["Access-Control-Allow-Methods"] = "GET, POST, OPTIONS"
         response.headers["Access-Control-Allow-Headers"] = "Content-Type, Authorization"
@@ -95,11 +97,16 @@ def handle_folders():
         if not folder_to_delete: return jsonify({"error": "Folder not found"}), 404
         folders = [f for f in folders if f["folderName"] != folder_name]
         return jsonify({"message": f"Folder '{folder_name}' deleted successfully"}), 200
-
-@app.route("/folders", methods=["GET"])
-def get_folders():
-    """Load all folders."""
-    return jsonify(folders), 200
+    
+    if request.method == "PUT":
+        data = request.json
+        posts = data.get("posts")
+        for folder in folders:
+            if folder["folderName"] == folder_name:
+                if posts is not None:
+                    folder["posts"] = posts
+                return jsonify(folder), 200
+        return jsonify({"error": "Folder not found"}), 404
 
 @app.route("/folders/<string:folder_name>", methods=["DELETE"])
 def delete_folder(folder_name):
@@ -120,57 +127,6 @@ def update_folder(folder_name):
             return jsonify(folder), 200
 
     return jsonify({"error": "Folder not found"}), 404
-
-@app.route("/folders/<string:folder_name>/posts", methods=["POST"])
-def add_post(folder_name):
-    """Add a post to a specific folder."""
-    data = request.json
-    post = {
-        "title": data.get("title"),
-        "content": data.get("content"),
-        "tags": data.get("tags", [])
-    }
-
-    if not post["title"] or not post["content"]:
-        return jsonify({"error": "title and content are required"}), 400
-
-    for folder in folders:
-        if folder["folderName"] == folder_name:
-            folder["posts"].append(post)
-            return jsonify(post), 201
-
-    return jsonify({"error": "Folder not found"}), 404
-
-@app.route("/folders/<string:folder_name>/posts/<string:post_title>", methods=["DELETE"])
-def delete_post(folder_name, post_title):
-    """Delete a specific post by title in a folder."""
-    for folder in folders:
-        if folder["folderName"] == folder_name:
-            folder["posts"] = [post for post in folder["posts"] if post["title"] != post_title]
-            return jsonify({"message": f"Post '{post_title}' deleted."}), 200
-
-    return jsonify({"error": "Folder or post not found"}), 404
-
-@app.route("/folders/<string:folder_name>/posts/<string:post_title>", methods=["PUT"])
-def update_post(folder_name, post_title):
-    """Update a specific post by title in a folder."""
-    data = request.json
-    new_title = data.get("title")
-    new_content = data.get("content")
-    new_tags = data.get("tags", [])
-
-    for folder in folders:
-        if folder["folderName"] == folder_name:
-            for post in folder["posts"]:
-                if post["title"] == post_title:
-                    if new_title:
-                        post["title"] = new_title
-                    if new_content:
-                        post["content"] = new_content
-                    post["tags"] = new_tags
-                    return jsonify(post), 200
-
-    return jsonify({"error": "Folder or post not found"}), 404
 
 # Initialize the database
 with app.app_context():
