@@ -32,6 +32,16 @@
   color: #007BFF;
 }
 
+.folder-list {
+  height: 40%;
+  overflow-y: auto;
+}
+
+.tags-list {
+  height: 40%;
+  overflow-y: auto;
+}
+
 .ContentView {
   flex-grow: 1;
   padding: 1rem;
@@ -47,6 +57,23 @@
 .ContentView ul {
   list-style-type: none;
   padding: 0;
+}
+
+.folder-header {
+  position: fixed;
+  top: 0;
+  width: 66%;
+  background-color: white;
+  border-bottom: 1px solid #ccc;
+  padding: 20px;
+  z-index: 1000;
+}
+
+.folder-body {
+  margin-top: 85px;
+  overflow-y: auto;
+  height: calc(100% - 100px);
+  box-sizing: border-box;
 }
 
 .folder-posts {
@@ -74,6 +101,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  z-index: 1001;
 }
 
 .ModalContent {
@@ -96,11 +124,16 @@
 }
 
 .ModalContent input, .ModalContent textarea {
-  width: 100%;
+  width: 96%;
   padding: 0.5rem;
   margin-top: 0.5rem;
   border: 1px solid #ccc;
   border-radius: 4px;
+}
+
+.ModalContent textarea {
+  resize: none;
+  height: 100px;
 }
 
 .ModalContent button {
@@ -127,7 +160,9 @@
 
 .Tag {
   border: 1px solid #ccc;
-  padding: 5px;
+  padding: 2px;
+  padding-left: 5px;
+  font-size: small;
   border-radius: 4px;
   height: 20px;
 }
