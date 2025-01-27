@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://gh-pages.d2dkjegv8aaxq5.amplifyapp.com";
+const API_BASE_URL = "https://ipekhillrc.execute-api.us-east-2.amazonaws.com/development";
 
 // Axios instance for API calls
 const api = axios.create({
