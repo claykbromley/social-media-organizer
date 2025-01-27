@@ -1,0 +1,15 @@
+{
+  "files": {
+    "main.css": "/social-media-organizer/static/css/main.5313f384.css",
+    "main.js": "/social-media-organizer/static/js/main.794cd7c1.js",
+    "static/js/488.aec6dc99.chunk.js": "/social-media-organizer/static/js/488.aec6dc99.chunk.js",
+    "index.html": "/social-media-organizer/index.html",
+    "main.5313f384.css.map": "/social-media-organizer/static/css/main.5313f384.css.map",
+    "main.794cd7c1.js.map": "/social-media-organizer/static/js/main.794cd7c1.js.map",
+    "488.aec6dc99.chunk.js.map": "/social-media-organizer/static/js/488.aec6dc99.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.5313f384.css",
+    "static/js/main.794cd7c1.js"
+  ]
+}
