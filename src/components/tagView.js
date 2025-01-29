@@ -5,7 +5,7 @@ function TagView({ folderContents, openModal, deletePost, tagFilter, setTagFilte
   return (
     <div className="ContentView">
       <div className='folder-header'>
-        <h3 style={{margin:'0'}}>Posts tagged with {tagFilter}</h3>
+        <h3 style={{margin:'0'}}>Posts tagged with {tagFilter.slice(0,60)}</h3>
       </div>
       {folderContents.length > 0 ? (
         <div className='folder-body' style={{marginTop:'46px'}}>

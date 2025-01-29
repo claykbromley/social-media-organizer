@@ -5,7 +5,8 @@ import Sidebar from './components/sidebar';
 import ContentView from './components/contentView';
 import TagView from './components/tagView';
 import Login from "./components/login";
-import { fetchFolder, createFolder, updateFolder, deleteFolder } from "./services/api";
+import { fetchFolder, updateFolder } from "./services/api";
+import { FaGear } from "react-icons/fa6";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -26,35 +27,6 @@ function App() {
       };
     };
   }, [user]);
-
-  const newFolder = async () => {
-    const folderName = prompt('Enter folder name:');
-    if (folderName && !folders[folderName]) {
-      try{
-        createFolder(folderName);
-        setFolders({ ...folders, [folderName]: [] });
-        setSelectedFolder(folderName);
-      } catch (error) {
-        console.error("Error creating folder:", error);
-      }
-    } else if (folders[folderName]) {
-      alert('Folder already exists!');
-    }
-  };
-
-  const removeFolder = async (folderName) => {
-    try{
-      deleteFolder(folderName);
-      const updatedFolders = { ...folders };
-      delete updatedFolders[folderName];
-      setFolders(updatedFolders);
-    } catch (error) {
-      console.error("Error removing folder:", error);
-    }
-    if (selectedFolder === folderName) {
-      setSelectedFolder(null);
-    }
-  };
 
   const openModal = (post = { title: '', content: '', tags: [] }, index = null) => {
     setCurrentPost(post);
@@ -89,18 +61,6 @@ function App() {
     }
     
     closeModal();
-  };
-
-  const addTag = () => {
-    const newTag = prompt('Enter new tag:');
-    if (newTag && !currentPost.tags.includes(newTag)) {
-      setCurrentPost({ ...currentPost, tags: [...currentPost.tags, newTag] });
-    }
-  };
-
-  const deleteTag = (tag) => {
-    const updatedTags = currentPost.tags.filter(t => t !== tag);
-    setCurrentPost({ ...currentPost, tags: updatedTags });
   };
 
   const deletePost = (folderName, index) => {
@@ -155,8 +115,7 @@ function App() {
       />}
       <Sidebar
         folders={folders}
-        createFolder={newFolder}
-        deleteFolder={removeFolder}
+        setFolders={setFolders}
         setSelectedFolder={folderClick}
         selectedFolder={selectedFolder}
         showTags={showTags}
@@ -164,6 +123,7 @@ function App() {
         filterByTag={filterByTag}
         tagFilter={tagFilter}
       />
+      <button className='settingsButton'><FaGear /></button>
       {!showTags &&
       <ContentView
         folderContents={folders[selectedFolder] || []}
@@ -188,8 +148,6 @@ function App() {
           setCurrentPost={setCurrentPost}
           savePost={savePost}
           closeModal={closeModal}
-          addTag={addTag}
-          deleteTag={deleteTag}
         />
       )}
     </div>

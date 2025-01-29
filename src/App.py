@@ -6,7 +6,8 @@ from flask_jwt_extended import (
 )
 from flask_cors import CORS
 
-webURL = "https://claykbromley.github.io/social-media-organizer"
+#webURL = "https://claykbromley.github.io/social-media-organizer"
+webURL = "http://localhost:3000"
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'  # Use SQLite for simplicity
@@ -38,6 +39,8 @@ class Post(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
 # Routes
+
+
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()

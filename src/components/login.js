@@ -29,7 +29,7 @@ export default function Login({ setUser }) {
 
   return (
     <div className="Modal">
-      <div className="ModalContent">
+      <div className="ModalContent" onKeyDown={e => e.key==="Enter"?handleSubmit(e):""}>
         <h2 style={{justifySelf:'center', marginTop:'0'}}>{isRegister ? "Register" : "Login"}</h2>
         <input
           type="text"
@@ -45,7 +45,7 @@ export default function Login({ setUser }) {
           onChange={(e) => setPassword(e.target.value)}
           required
         />
-        <div style={{display:'flex', justifyContent:'center'}}>
+        <div style={{display:'flex', justifyContent:'center', gap:'20px'}}>
           <button type="submit" onClick={handleSubmit}>{isRegister ? "Register" : "Login"}</button>
           <button onClick={() => setIsRegister(!isRegister)}>
             {isRegister ? "Already have an account? Login" : "No account? Register"}

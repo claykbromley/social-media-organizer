@@ -1,6 +1,7 @@
 import axios from "axios";
 
-const API_BASE_URL = "https://ipekhillrc.execute-api.us-east-2.amazonaws.com/development";
+//const API_BASE_URL = "http://3.14.144.187:5001";
+const API_BASE_URL = "http://127.0.0.1:5000";
 
 // Axios instance for API calls
 const api = axios.create({
@@ -49,8 +50,11 @@ export const fetchFolder = async (setFolders) => {
     }
   );
   console.log("Folders fetched:", response.data);
-  const newFolders = response.data.map((folder) => ({[folder.folderName]: folder.posts}));
-  newFolders.length>0 ? setFolders(newFolders[0]) : setFolders(newFolders);
+  const newFolders = response.data.reduce((acc, folder) => {
+    acc[folder.folderName] = folder.posts;
+    return acc;
+  }, {});
+  setFolders(newFolders);
 };
 
 export const createFolder = async (folderName) => {

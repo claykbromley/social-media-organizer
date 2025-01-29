@@ -7,7 +7,7 @@ function ContentView({ folderContents, openModal, deletePost, selectedFolder, se
       {selectedFolder? (
         <>
           <div className='folder-header'>
-            <h3 style={{justifySelf:'center'}}>Contents of {selectedFolder}</h3>
+            <h3 style={{justifySelf:'center'}}>Contents of {selectedFolder.slice(0,70)}</h3>
             <div style={{display:'flex', justifyContent:'center'}}>
               <button onClick={() => openModal()}>+ New Post</button>
             </div>
