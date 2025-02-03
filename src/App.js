@@ -5,7 +5,8 @@ import Sidebar from './components/sidebar';
 import ContentView from './components/contentView';
 import TagView from './components/tagView';
 import Login from "./components/login";
-import { fetchFolder, updateFolder } from "./services/api";
+import Settings from "./components/settings";
+import { fetchFolder, updateFolder, logoutUser } from "./services/api";
 import { FaGear } from "react-icons/fa6";
 
 function App() {
@@ -17,6 +18,8 @@ function App() {
   const [editingIndex, setEditingIndex] = useState(null);
   const [tagFilter, setTagFilter] = useState(null);
   const [showTags, setShowTags] = useState(false);
+  const [openSettings, setOpenSettings] = useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -82,7 +85,7 @@ function App() {
   }
 
   const filterByTag = (tag) => {
-    setShowTags(true)
+    setShowTags(true);
     setTagFilter(tag);
   };
 
@@ -108,6 +111,12 @@ function App() {
     ? getAllPostsByTag(tagFilter)
     : (folders[selectedFolder] || []).map(post => ({ folder: selectedFolder, post }));
 
+
+  const logout = () => {
+    logoutUser(setUser, setFolders, setSelectedFolder);
+    setOpenSettings(false);
+  };
+
   return (
     <div className="App">
       {!user && <Login
@@ -123,7 +132,15 @@ function App() {
         filterByTag={filterByTag}
         tagFilter={tagFilter}
       />
-      <button className='settingsButton'><FaGear /></button>
+      <button className='settingsButton' onClick={() => setOpenSettings(true)}><FaGear /></button>
+      {openSettings && 
+        <Settings
+          setOpenSettings={setOpenSettings}
+          user={user}
+          logout={logout}
+          darkMode={darkMode}
+          setDarkMode={setDarkMode}
+      />}
       {!showTags &&
       <ContentView
         folderContents={folders[selectedFolder] || []}

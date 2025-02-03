@@ -2,17 +2,21 @@ from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_jwt_extended import (
-    JWTManager, create_access_token
+    JWTManager, create_access_token, jwt_required, get_jwt_identity, get_jwt
 )
+from flask_migrate import Migrate
 from flask_cors import CORS
+import os
 
 #webURL = "https://claykbromley.github.io/social-media-organizer"
-webURL = "http://localhost:3000"
+webURL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'  # Use SQLite for simplicity
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = 'your_jwt_secret_key'
+app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY", "your_jwt_secret_key")  # Use environment variable
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600  # Token expires in 1 hour
+
 CORS(
     app,
     origins=[webURL],
@@ -24,6 +28,10 @@ CORS(
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 jwt = JWTManager(app)
+migrate = Migrate(app, db)
+
+# Store revoked tokens
+revoked_tokens = set()
 
 # Models
 class User(db.Model):
@@ -31,6 +39,7 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(200), nullable=False)
     posts = db.relationship('Post', backref='author', lazy=True)
+    dark_mode = db.Column(db.Boolean, default=False)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,18 +47,22 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
+# JWT Token Blocklist Check
+@jwt.token_in_blocklist_loader
+def check_if_token_revoked(jwt_header, jwt_payload):
+    jti = jwt_payload["jti"]
+    return jti in revoked_tokens
+
 # Routes
-
-
 @app.route('/register', methods=['POST'])
 def register():
     data = request.get_json()
     username = data.get('username')
     password = data.get('password')
-    
+
     if User.query.filter_by(username=username).first():
         return jsonify({'error': 'Username already exists'}), 400
-    
+
     hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
     new_user = User(username=username, password=hashed_password)
     db.session.add(new_user)
@@ -62,12 +75,22 @@ def login():
     username = data.get('username')
     password = data.get('password')
     user = User.query.filter_by(username=username).first()
-    
+
     if user and bcrypt.check_password_hash(user.password, password):
-        access_token = create_access_token(identity=user.id)
-        return jsonify({'access_token': access_token}), 200
-    
+        access_token = create_access_token(identity=str(user.id))
+        return jsonify(
+            {'access_token': access_token,
+             'dark_mode': user.dark_mode
+            }), 200
     return jsonify({'error': 'Invalid credentials'}), 401
+
+
+@app.route('/logout', methods=['POST'])
+@jwt_required()
+def logout():
+    jti = get_jwt()["jti"]
+    revoked_tokens.add(jti)
+    return jsonify({"message": "Successfully logged out"}), 200
 
 folders = []
 
@@ -130,6 +153,20 @@ def update_folder(folder_name):
             return jsonify(folder), 200
 
     return jsonify({"error": "Folder not found"}), 404
+
+@app.route('/update-dark-mode', methods=['POST'])
+@jwt_required()
+def update_dark_mode():
+    user_id = get_jwt_identity()
+    data = request.get_json()
+    dark_mode = data.get('dark_mode')
+
+    user = User.query.get(user_id)
+    if user:
+        user.dark_mode = dark_mode
+        db.session.commit()
+        return jsonify({"message": "Dark mode preference updated"}), 200
+    return jsonify({"error": "User not found"}), 404
 
 # Initialize the database
 with app.app_context():

@@ -16,19 +16,17 @@ export default function Login({ setUser }) {
           registerUser(username, password, setIsRegister)
         } else {
           const response = await loginUser(username, password);
-          const { access_token } = response.data;
-          localStorage.setItem("token", access_token);
           setUser(username);
         }
       } catch (err) {
         console.error(err);
-        alert("Error: " + (err.response?.data?.error || "Something went wrong"));
+        alert("Incorrect username or password");
       };
     };
   };
 
   return (
-    <div className="Modal">
+    <div className="Modal" style={{zIndex:'1002'}}>
       <div className="ModalContent" onKeyDown={e => e.key==="Enter"?handleSubmit(e):""}>
         <h2 style={{justifySelf:'center', marginTop:'0'}}>{isRegister ? "Register" : "Login"}</h2>
         <input

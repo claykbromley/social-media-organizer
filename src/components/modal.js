@@ -3,6 +3,9 @@ import '../App.css';
 import { Camera } from 'lucide-react';
 
 function Modal({ currentPost, setCurrentPost, savePost, closeModal }) {
+  const handleOutsideClick = (event) => {
+    if (event.target.classList.contains('Modal')) {closeModal()}
+  };
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
@@ -28,7 +31,7 @@ function Modal({ currentPost, setCurrentPost, savePost, closeModal }) {
   };
   
   return (
-    <div className="Modal">
+    <div className="Modal"  onClick={handleOutsideClick}>
       <div className="ModalContent">
         <h3>{currentPost.title ? 'Edit Post' : 'New Post'}</h3>
         <label>Title</label>
