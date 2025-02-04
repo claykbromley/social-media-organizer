@@ -12,9 +12,9 @@ import os
 webURL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'  # Use SQLite for simplicity
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY", "your_jwt_secret_key")  # Use environment variable
+app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY", "your_jwt_secret_key")
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600  # Token expires in 1 hour
 
 CORS(
@@ -106,6 +106,7 @@ def handle_folders():
         return response
 
     if request.method == "GET":
+        print(User.dark_mode)
         return jsonify(folders), 200
 
     if request.method == "POST":

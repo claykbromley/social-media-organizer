@@ -28,10 +28,18 @@ function ContentView({ folderContents, openModal, deletePost, selectedFolder, se
                     <div style={{display:'flex', justifyContent:'center'}}>
                       <p>{post.content}</p>
                     </div>
-                    {post.image &&
-                      <div style={{display:'flex', justifyContent:'center', marginBottom:'20px'}}>
-                        <img src={post.image} alt="Preview" style={{ maxWidth:'50%' }}/>
-                      </div>}
+                    {post.media && (
+                      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
+                        {post.mediaType.startsWith('image/') ? (
+                          <img src={post.media} alt="Preview" style={{ maxWidth: '50%' }} />
+                        ) : post.mediaType.startsWith('video/') ? (
+                          <video controls preload="metadata" style={{ maxWidth: '50%' }}>
+                            <source src={post.media} type={post.mediaType} />
+                            Your browser does not support the video tag.
+                          </video>
+                        ) : null}
+                      </div>
+                      )}
                     <div style={{display:'flex', gap:'10px', justifyContent:'center'}}>
                       <button onClick={() => openModal(post, index)}>Edit</button>
                       <button onClick={() => deletePost(index)}>Delete</button>

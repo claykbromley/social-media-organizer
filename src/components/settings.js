@@ -1,10 +1,12 @@
-import React from 'react';
+import { React, useState } from 'react';
 import '../App.css';
 import { FaSignOutAlt } from 'react-icons/fa';
 import { MdDarkMode, MdLightMode } from 'react-icons/md';
 import { toggleDarkMode } from '../services/api.js'
 
-function Settings ({ setOpenSettings, user, logout, darkMode, setDarkMode }) {
+function Settings ({ setOpenSettings, user, logout }) {
+  const [darkMode, setDarkMode] = useState(localStorage.getItem("darkMode")==='enabled');
+
   const handleOutsideClick = (event) => {
     if (event.target.classList.contains('Modal')) {setOpenSettings(false)}
   };

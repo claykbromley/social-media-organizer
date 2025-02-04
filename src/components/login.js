@@ -5,30 +5,56 @@ export default function Login({ setUser }) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [isRegister, setIsRegister] = useState(false);
+  const [incorrect, setIncorrect] = useState(false);
+  const [invalid, setInvalid] = useState(false);
+  const [userExists, setUserExists] = useState(false);
+  const [registerSuccess, setRegisterSuccess] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!username || !password) {
-      alert("Please insert username and password")
+      setInvalid(true);
+      return;
     } else {
+      setInvalid(false);
       try {
         if (isRegister) {
-          registerUser(username, password, setIsRegister)
+          setIncorrect(false);
+          const success = await registerUser(username, password, setIsRegister);
+          if (success === true) {
+            console.log("Registration successful");
+            setUserExists(false);
+            setRegisterSuccess(true);
+            setIsRegister(false);
+          } else {
+            setUserExists(true);
+          }
         } else {
-          const response = await loginUser(username, password);
-          setUser(username);
+          setUserExists(false);
+          const loginSuccess = await loginUser(username, password);
+          if (loginSuccess) {
+            setUser(username);
+            setIncorrect(false);
+          } else {
+            setIncorrect(true);
+          }
         }
       } catch (err) {
         console.error(err);
-        alert("Incorrect username or password");
-      };
-    };
+        setRegisterSuccess(false);
+        setIncorrect(true);
+      }
+    }
   };
 
   return (
     <div className="Modal" style={{zIndex:'1002'}}>
       <div className="ModalContent" onKeyDown={e => e.key==="Enter"?handleSubmit(e):""}>
         <h2 style={{justifySelf:'center', marginTop:'0'}}>{isRegister ? "Register" : "Login"}</h2>
+        {invalid && <h4 className="login-error">Please insert username and password</h4>}
+        {incorrect && <h4 className="login-error">Incorrect username or password</h4>}
+        {userExists && <h4 className="login-error">Username already exists</h4>}
+        {registerSuccess && <h4 className="login-error" style={{color:'green'}}>Registration successful! You can now login</h4>}
         <input
           type="text"
           placeholder="Username"

@@ -19,7 +19,6 @@ function App() {
   const [tagFilter, setTagFilter] = useState(null);
   const [showTags, setShowTags] = useState(false);
   const [openSettings, setOpenSettings] = useState(false);
-  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
     if (user) {
@@ -45,12 +44,13 @@ function App() {
 
   const savePost = () => {
     const newPost = { ...currentPost };
+    console.log(newPost)
     
     const updatedFolderContents = [...folders[selectedFolder]];
     if (editingIndex !== null) {
       updatedFolderContents[editingIndex] = newPost;
     } else {
-      updatedFolderContents.push(newPost);
+      updatedFolderContents.unshift(newPost);
     }
 
     try {
@@ -138,8 +138,6 @@ function App() {
           setOpenSettings={setOpenSettings}
           user={user}
           logout={logout}
-          darkMode={darkMode}
-          setDarkMode={setDarkMode}
       />}
       {!showTags &&
       <ContentView

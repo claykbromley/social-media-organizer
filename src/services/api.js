@@ -18,9 +18,9 @@ api.interceptors.request.use((config) => {
 });
 
 // Auth endpoints
-export const registerUser = async (username, password, setIsRegister) => {
+export const registerUser = async (username, password) => {
   try {
-    const response = await axios.post(
+    await axios.post(
       `${API_BASE_URL}/register`,
       { username, password },
       {
@@ -28,36 +28,41 @@ export const registerUser = async (username, password, setIsRegister) => {
         withCredentials: true,
       }
     );
-    console.log("Registration successful:", response.data);
-    alert("Registration successful! You can now log in.");
-    setIsRegister(false);
-  } catch (error) {
-    console.error("Error:", error.response?.data || error.message);
-    alert("Username already exists!");
-  };
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 export const loginUser = async (username, password) => {
-    try {
-        const response = await axios.post(
-          `${API_BASE_URL}/login`,
-          {username, password},
-          {headers: { "Content-Type": "application/json" },
-           withCredentials: true});
+  try {
+    const response = await axios.post(
+      `${API_BASE_URL}/login`,
+      { username, password },
+      {
+        headers: { "Content-Type": "application/json" },
+        withCredentials: true,
+      }
+    );
 
-        const accessToken = response.data.access_token;
-        console.log(response.data)
-        if (accessToken) {
-            localStorage.setItem('access_token', accessToken);
-            console.log("Logged in! Token saved:");
+    const accessToken = response.data.access_token;
+    if (accessToken) {
+      localStorage.setItem('access_token', accessToken);
+      console.log("Logged in! Token saved.");
 
-            localStorage.setItem('darkMode', response.data.dark_mode ? "enabled" : "disabled");
-            if (response.data.dark_mode) {document.body.classList.add("dark-mode")}
-            else {document.body.classList.remove("dark-mode")}
-        }
-    } catch (error) {
-        console.error("Login failed:", error.response?.data || error.message);
+      localStorage.setItem('darkMode', response.data.dark_mode ? "enabled" : "disabled");
+      if (response.data.dark_mode) {
+        document.body.classList.add("dark-mode");
+      } else {
+        document.body.classList.remove("dark-mode");
+      }
+
+      return true;
     }
+  } catch (error) {
+    console.error("Login failed:", error);
+    return false;
+  }
 };
 
 export const logoutUser = async (setUser, setFolders, setSelectedFolder) => {

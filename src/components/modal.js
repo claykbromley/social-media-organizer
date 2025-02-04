@@ -9,13 +9,18 @@ function Modal({ currentPost, setCurrentPost, savePost, closeModal }) {
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
-    if (file) {
+    if (!file) return;
+
+    if (file.type.startsWith("image/")) {
       const reader = new FileReader();
       reader.onload = () => {
-        setCurrentPost({ ...currentPost, image: reader.result, imageName: file.name });
+        setCurrentPost({ ...currentPost, mediaName: file.name, media: reader.result, mediaType: file.type });
       };
       reader.readAsDataURL(file);
-    };
+    } else if (file.type.startsWith("video/")) {
+      const videoURL = URL.createObjectURL(file);
+      setCurrentPost({ ...currentPost, mediaName: file.name, media: videoURL, mediaType: file.type });
+    }
   };
 
   const addTag = () => {
@@ -51,14 +56,14 @@ function Modal({ currentPost, setCurrentPost, savePost, closeModal }) {
           <input
             id="fileInput"
             type="file"
-            accept="image/*"
+            accept="image/*,video/*"
             style={{ display: 'none' }}
             onChange={handleImageUpload}
           />
-          {currentPost.imageName && 
+          {currentPost.mediaName && 
             <div className='Tags' style={{display:'flex', justifyContent:'center', alignItems:'center'}}>
-              <p><strong>Selected Image:</strong> {currentPost.imageName}</p>
-              <button onClick={() => setCurrentPost({ ...currentPost, image: null, imageName: null })}>x</button>
+              <p style={{margin:0, marginLeft:'20px'}}><strong>Selected {currentPost.mediaType.startsWith('image/')?"Image":"Video"}:</strong> {currentPost.mediaName}</p>
+              <button onClick={() => setCurrentPost({ ...currentPost, media: null, mediaName: null })}>x</button>
             </div>}
         </div>
         <label>Tags</label>
