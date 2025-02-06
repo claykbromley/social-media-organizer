@@ -33,9 +33,8 @@ function ContentView({ folderContents, openModal, deletePost, selectedFolder, se
                         {post.mediaType.startsWith('image/') ? (
                           <img src={post.media} alt="Preview" style={{ maxWidth: '50%' }} />
                         ) : post.mediaType.startsWith('video/') ? (
-                          <video controls preload="metadata" style={{ maxWidth: '50%' }}>
-                            <source src={post.media} type={post.mediaType} />
-                            Your browser does not support the video tag.
+                          <video controls autoPlay loop muted key={post.media} style={{maxWidth: '50%'}}>
+                            <source src={post.media} type="video/mp4"></source>
                           </video>
                         ) : null}
                       </div>

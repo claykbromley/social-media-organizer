@@ -44,7 +44,6 @@ function App() {
 
   const savePost = () => {
     const newPost = { ...currentPost };
-    console.log(newPost)
     
     const updatedFolderContents = [...folders[selectedFolder]];
     if (editingIndex !== null) {

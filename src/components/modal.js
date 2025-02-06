@@ -1,33 +1,36 @@
-import { React } from 'react';
+import { React, useState } from 'react';
 import '../App.css';
 import { Camera } from 'lucide-react';
 
 function Modal({ currentPost, setCurrentPost, savePost, closeModal }) {
+  const [createTag, setCreateTag] = useState(false);
+  const [newTag, setNewTag] = useState(null);
+
   const handleOutsideClick = (event) => {
-    if (event.target.classList.contains('Modal')) {closeModal()}
+    if (event.target.classList.contains('Modal') && createTag===false) {closeModal()};
+  };
+
+  const handleOutsideClickTag = (event) => {
+    if (event.target.classList.contains('Modal')) {setCreateTag(false)};
   };
 
   const handleImageUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
-
-    if (file.type.startsWith("image/")) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setCurrentPost({ ...currentPost, mediaName: file.name, media: reader.result, mediaType: file.type });
-      };
-      reader.readAsDataURL(file);
-    } else if (file.type.startsWith("video/")) {
-      const videoURL = URL.createObjectURL(file);
-      setCurrentPost({ ...currentPost, mediaName: file.name, media: videoURL, mediaType: file.type });
-    }
+    
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (file.type.startsWith("video/")) {setCurrentPost({ ...currentPost, mediaName: file.name, media: reader.result, mediaType: "video/mp4" })}
+      else {setCurrentPost({ ...currentPost, mediaName: file.name, media: reader.result, mediaType: file.type })};
+    };
+    reader.readAsDataURL(file);
   };
 
   const addTag = () => {
-    const newTag = prompt('Enter new tag:');
     if (newTag && !currentPost.tags.includes(newTag)) {
       setCurrentPost({ ...currentPost, tags: [...currentPost.tags, newTag] });
     }
+    setCreateTag(false);
   };
 
   const deleteTag = (tag) => {
@@ -68,7 +71,21 @@ function Modal({ currentPost, setCurrentPost, savePost, closeModal }) {
         </div>
         <label>Tags</label>
         <div style={{display:'flex', justifyContent:'center'}}>
-          <button style={{margin:'5px'}} onClick={addTag}>+ Add Tag</button>
+          <button style={{margin:'5px'}} onClick={() => setCreateTag(true)}>+ Add Tag</button>
+          {createTag && <div className="Modal" onClick={handleOutsideClickTag}>
+            <div className="ModalContent">
+              <h3 style={{margin:0}}>Add Tag:</h3>
+              <input
+                type="text"
+                onChange={(e) => setNewTag(e.target.value)}
+                onKeyDown={e => e.key==="Enter"?addTag(e):""}
+              />
+              <div style={{display:'flex', justifyContent:'center', gap:'20px'}}>
+                <button onClick={addTag}>Add Tag</button>
+                <button onClick={() => setCreateTag(false)}>Cancel</button>
+              </div>
+            </div>
+          </div>}
         </div>
         <div className="Tags">
           {currentPost.tags.map((tag, index) => (
