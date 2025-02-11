@@ -1,7 +1,10 @@
 import axios from "axios";
 
-//const API_BASE_URL = "http://3.14.144.187:5001";
-const API_BASE_URL = "http://127.0.0.1:5000";
+const ENV = "prod"
+
+const API_BASE_URL = null
+if (ENV==="dev") {API_BASE_URL = "http://127.0.0.1:5000"}
+else {"https://social-media-organizer-8fbda1cc29c7.herokuapp.com/"};
 
 // Axios instance for API calls
 const api = axios.create({

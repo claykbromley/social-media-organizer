@@ -30,7 +30,7 @@ function App() {
     };
   }, [user]);
 
-  const openModal = (post = { title: '', content: '', tags: [] }, index = null) => {
+  const openModal = (post = { title: '', datetime: '', content: '', tags: [] }, index = null) => {
     setCurrentPost(post);
     setEditingIndex(index);
     setModalOpen(true);
@@ -44,7 +44,8 @@ function App() {
 
   const savePost = () => {
     const newPost = { ...currentPost };
-    
+    newPost.datetime = new Date();
+
     const updatedFolderContents = [...folders[selectedFolder]];
     if (editingIndex !== null) {
       updatedFolderContents[editingIndex] = newPost;

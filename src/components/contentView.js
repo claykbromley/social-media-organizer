@@ -20,6 +20,12 @@ function ContentView({ folderContents, openModal, deletePost, selectedFolder, se
                     <div style={{display:'flex', justifyContent:'center'}}>
                       <strong>{post.title}</strong>
                     </div>
+                    <div style={{display:'flex', justifyContent:'center'}}>
+                      <p style={{fontSize:'small', margin:0}}>
+                        Last updated: {post.datetime.toLocaleString('en-US',
+                        {month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', ' at')}
+                      </p>
+                    </div>
                     <div style={{display:'flex', gap:'10px', alignItems:"center", justifyContent:'center', margin:'5px'}}>
                       <p style={{margin:'0'}}>tags: </p>
                       {post.tags.map((tag) => 

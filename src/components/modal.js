@@ -41,7 +41,13 @@ function Modal({ currentPost, setCurrentPost, savePost, closeModal }) {
   return (
     <div className="Modal"  onClick={handleOutsideClick}>
       <div className="ModalContent">
-        <h3>{currentPost.title ? 'Edit Post' : 'New Post'}</h3>
+        <h3 style={{margin:0}}>{currentPost.title ? 'Edit Post' : 'New Post'}</h3>
+        <div style={{display:'flex', justifyContent:'center'}}>
+          {currentPost.datetime?<p style={{fontSize:'small', margin:0}}>
+            Last updated: {currentPost.datetime.toLocaleString('en-US',
+            {month: '2-digit', day: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', hour12: true }).replace(',', ' at')}
+          </p>:""}
+        </div>
         <label>Title</label>
         <input
           type="text"

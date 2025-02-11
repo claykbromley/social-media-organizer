@@ -3,16 +3,14 @@
   --bg-color-2: #f4f4f4;
   --border-color: #ccc;
   --text-color: black;
-  --settings-button-color: grey;
   --button-color: #007BFF;
 }
 
 .dark-mode {
   --bg-color: #121212;
   --bg-color-2: #232323;
-  --border-color: #5d5d5d;
-  --text-color: grey;
-  --settings-button-color: #232323;
+  --border-color: grey;
+  --text-color: white;
   --button-color: #004793;
 }
 
@@ -58,7 +56,7 @@ body {
 
 .settingsButton:hover {
   background-color: var(--bg-color) !important;
-  color: var(--settings-button-color);
+  color: grey;
 }
 
 .settings-modal {
@@ -283,7 +281,6 @@ body {
   display: flex;
   gap: 10px;
   justify-content: center;
-  height: 50px;
   overflow-x: auto;
 }
 
