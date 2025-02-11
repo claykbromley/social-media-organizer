@@ -11,11 +11,10 @@ import os
 ENV = 'prod'
 
 app = Flask(__name__)
+webURL = os.getenv("FRONTEND_URL", "http://localhost:3000")
 if ENV == 'dev':
-    webURL = os.getenv("FRONTEND_URL", "http://localhost:3000")
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:Dadrluvsme22@localhost:5432/social-media-organizer'
 else:
-    webURL = "https://social-media-organizer-8fbda1cc29c7.herokuapp.com/"
     app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://u1e02tublqotur:p1b66c785bac2809abc44e0e059d17946278f92607e601f6d3e6fbc26ff99f40d@cb5ajfjosdpmil.cluster-czrs8kj4isg7.us-east-1.rds.amazonaws.com:5432/d206atm0imur8r'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = os.getenv("JWT_SECRET_KEY", "your_jwt_secret_key")
